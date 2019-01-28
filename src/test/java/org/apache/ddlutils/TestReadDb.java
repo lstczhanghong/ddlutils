@@ -1,0 +1,65 @@
+package org.apache.ddlutils;
+
+import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp.BasicDataSourceFactory;
+import org.apache.ddlutils.model.Column;
+import org.apache.ddlutils.model.Database;
+import org.apache.ddlutils.model.Table;
+import org.apache.ddlutils.platform.mssql.MSSqlModelReader;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Properties;
+
+/**
+ * @auther:zh
+ * @date:2019/1/28
+ */
+public class TestReadDb {
+
+
+    public static void main(String[] args) {
+        TestReadDb db=new TestReadDb();
+        try {
+            db.testMssql();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void testMssql() throws SQLException {
+        BasicDataSource  dataSource=new BasicDataSource();
+        dataSource.setDriverClassName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+        dataSource.setUrl("jdbc:sqlserver://ldwqh0.oicp.net:14330;databaseName=cqtbtest");
+        dataSource.setUsername("sa");
+        dataSource.setPassword("admin123456!@#");
+        final Platform sourcePlatform = PlatformFactory.createNewPlatformInstance(dataSource);
+        sourcePlatform.setDelimitedIdentifierModeOn(true);
+
+        MSSqlModelReader reader = new MSSqlModelReader(sourcePlatform);
+//        final Database sourceDatabase= reader.getDatabase(sourceDataSource.getConnection(),"cpms","cpms","dbo",null);
+
+        final Database sourceDatabase = sourcePlatform.readModelFromDatabase("cqtbtest", "cqtbtest", "dbo", null);
+        // String name, String catalog, String schema, String[] tableTypes)
+        {
+            //new DatabaseIO().write(sourceDatabase, "database.ddl");
+            final Table[] tables = sourceDatabase.getTables();
+            for (final Table table : tables) {
+                System.out.println(table.getName() + " : " + table.getDescription());
+
+                final Column[] columns = table.getColumns();
+                for (final Column column : columns) {
+                    System.out.print(column.getName() + "[" + column.getDescription() + "], ");
+                }
+                System.out.println();
+            }
+        }
+    }
+
+
+
+
+
+}
