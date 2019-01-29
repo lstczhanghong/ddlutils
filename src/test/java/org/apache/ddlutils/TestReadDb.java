@@ -21,15 +21,7 @@ import java.util.Properties;
 public class TestReadDb {
 
 
-    public static void main(String[] args) {
-        TestReadDb db=new TestReadDb();
-        try {
-            db.testMssql();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
+    @Test
     public void testMssql() throws SQLException {
         BasicDataSource  dataSource=new BasicDataSource();
         dataSource.setDriverClassName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
@@ -38,12 +30,7 @@ public class TestReadDb {
         dataSource.setPassword("admin123456!@#");
         final Platform sourcePlatform = PlatformFactory.createNewPlatformInstance(dataSource);
         sourcePlatform.setDelimitedIdentifierModeOn(true);
-
-        MSSqlModelReader reader = new MSSqlModelReader(sourcePlatform);
-//        final Database sourceDatabase= reader.getDatabase(sourceDataSource.getConnection(),"cpms","cpms","dbo",null);
-
         final Database sourceDatabase = sourcePlatform.readModelFromDatabase("cqtbtest", "cqtbtest", "dbo", null);
-        // String name, String catalog, String schema, String[] tableTypes)
         {
             //new DatabaseIO().write(sourceDatabase, "database.ddl");
             final Table[] tables = sourceDatabase.getTables();
