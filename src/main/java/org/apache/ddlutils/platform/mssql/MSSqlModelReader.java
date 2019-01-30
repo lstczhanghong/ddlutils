@@ -19,13 +19,10 @@ package org.apache.ddlutils.platform.mssql;
  * under the License.
  */
 
+import java.sql.*;
 import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.sql.Types;
-import java.util.Map;
+import java.text.Collator;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -96,6 +93,11 @@ public class MSSqlModelReader extends JdbcModelReader
 
         if (table != null)
         {
+            //todo 查询表注释信息
+//            SELECT objname, cast(value as varchar(8000)) as value
+//            FROM fn_listextendedproperty ('MS_DESCRIPTION','schema', 'dbo', 'table', 'bf_role_', 'column', null)
+            table = readComments(table);
+
             // Sql Server does not return the auto-increment status via the database metadata
             determineAutoIncrementFromResultSetMetaData(table, table.getColumns());
 
@@ -117,6 +119,39 @@ public class MSSqlModelReader extends JdbcModelReader
         }
         return table;
 	}
+
+    /**
+     * 查询表的注释信息
+     * 由于DatabaseMetaData.getTables(..)获取不到remarks Mssql单独处理
+     * @param table
+     * @return
+     */
+    private Table readComments(Table table) {
+
+//        String sql="SELECT objtype,objname,name,value FROM fn_listextendedproperty (NULL, 'schema', 'Sales', 'table', default, NULL, NULL)";
+        String sql = "SELECT objtype,objname,name,cast(value as varchar(8000)) as value FROM fn_listextendedproperty (?, ?, ?, ?, ?, NULL, NULL)";
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            pstmt = getConnection().prepareStatement(sql);
+            pstmt.setString(1, "MS_DESCRIPTION");
+            pstmt.setString(2, "schema");
+            pstmt.setString(3, "dbo");
+            pstmt.setString(4, "table");
+            pstmt.setString(5, table.getName());
+
+            rs = pstmt.executeQuery();
+            while (rs.next()) {
+                table.setDescription(rs.getString("value"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeStatement(pstmt);
+            closeResultSet(rs);
+        }
+        return table;
+    }
 
     /**
      * {@inheritDoc}
@@ -228,4 +263,76 @@ public class MSSqlModelReader extends JdbcModelReader
 
 		return column;
 	}
+
+    /**
+     * Reads the column definitions for the indicated table.
+     *
+     * @param metaData  The database meta data
+     * @param tableName The name of the table
+     * @return The columns
+     */
+    protected Collection readColumns(DatabaseMetaDataWrapper metaData, String tableName) throws SQLException {
+        ResultSet columnData = null;
+
+        try
+        {
+            columnData = metaData.getColumns(metaData.escapeForSearch(tableName), getDefaultColumnPattern());
+
+            List<Column> columns = new ArrayList<Column>();
+
+
+            while (columnData.next())
+            {
+                Map values = readColumns(columnData, getColumnsForColumn());
+
+                columns.add(readColumn(metaData, values));
+            }
+
+            columns = readColumnsCommnets(columns,tableName);
+
+            return columns;
+        }
+        finally
+        {
+            closeResultSet(columnData);
+        }
+    }
+
+    /**
+     * 查询字段注释
+     *
+     * @param columns
+     * @param tableName
+     * @return
+     */
+    private List<Column> readColumnsCommnets(List<Column> columns, String tableName) throws SQLException {
+        //todo 查询字段注释
+//            SELECT objname, cast(value as varchar(8000)) as value
+//            FROM fn_listextendedproperty ('MS_DESCRIPTION','schema', 'dbo', 'table', 'bf_role_', 'column', null)
+        String sql = "SELECT objtype,objname,name,cast(value as varchar(8000)) as value FROM fn_listextendedproperty (?, ?, ?, ?, ?, 'column', NULL)";
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            pstmt = getConnection().prepareStatement(sql);
+            pstmt.setString(1, "MS_DESCRIPTION");
+            pstmt.setString(2, "schema");
+            pstmt.setString(3, "dbo");
+            pstmt.setString(4, "table");
+            pstmt.setString(5, tableName);
+
+            rs = pstmt.executeQuery();
+            while (rs.next()) {
+                String tempColumn = rs.getString("objname");
+                for (Column column : columns) {
+                    if (column.getName().equalsIgnoreCase(tempColumn)) {
+                        column.setDescription(rs.getString("value"));
+                    }
+                }
+            }
+        } finally {
+            closeStatement(pstmt);
+            closeResultSet(rs);
+        }
+        return columns;
+    }
 }

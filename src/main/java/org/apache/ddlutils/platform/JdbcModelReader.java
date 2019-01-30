@@ -539,9 +539,6 @@ public class JdbcModelReader
             metaData.setTableTypes((tableTypes == null) || (tableTypes.length == 0) ? getDefaultTableTypes() : tableTypes);
             
             tableData = metaData.getTables(getDefaultTablePattern());
-            //todo 查询表注释信息
-//            SELECT objname, cast(value as varchar(8000)) as value
-//            FROM fn_listextendedproperty ('MS_DESCRIPTION','schema', 'dbo', 'table', 'bf_role_', 'column', null)
 
             List tables = new ArrayList();
 
@@ -779,9 +776,6 @@ public class JdbcModelReader
             columnData = metaData.getColumns(metaData.escapeForSearch(tableName), getDefaultColumnPattern());
 
             List columns = new ArrayList();
-            //todo 查询字段注释
-//            SELECT objname, cast(value as varchar(8000)) as value
-//            FROM fn_listextendedproperty ('MS_DESCRIPTION','schema', 'dbo', 'table', 'bf_role_', 'column', null)
 
             while (columnData.next())
             {
