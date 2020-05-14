@@ -1213,4 +1213,8 @@ public interface Platform
      * @throws DatabaseOperationException If an error occurred during reading the model
      */
     public Database readModelFromDatabase(Connection connection, String name, String catalog, String schema, String[] tableTypes) throws DatabaseOperationException;
+
+    boolean isNeedInitalize();
+
+    void setNeedInitalize(boolean needInitalize);
 }

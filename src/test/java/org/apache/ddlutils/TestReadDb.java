@@ -25,12 +25,12 @@ public class TestReadDb {
     public void testMssql() throws SQLException {
         BasicDataSource  dataSource=new BasicDataSource();
         dataSource.setDriverClassName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-        dataSource.setUrl("jdbc:sqlserver://ldwqh0.oicp.net:14330;databaseName=cqtbtest");
+        dataSource.setUrl("jdbc:sqlserver://ldwqh0.oicp.net:14330;databaseName=mesh");
         dataSource.setUsername("sa");
         dataSource.setPassword("admin123456!@#");
         final Platform sourcePlatform = PlatformFactory.createNewPlatformInstance(dataSource);
         sourcePlatform.setDelimitedIdentifierModeOn(true);
-        final Database sourceDatabase = sourcePlatform.readModelFromDatabase("cqtbtest", "cqtbtest", "dbo", null);
+        final Database sourceDatabase = sourcePlatform.readModelFromDatabase("mesh", "mesh", "dbo", null);
         {
             //new DatabaseIO().write(sourceDatabase, "database.ddl");
             final Table[] tables = sourceDatabase.getTables();

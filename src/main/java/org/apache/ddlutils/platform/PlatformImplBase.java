@@ -121,6 +121,8 @@ public abstract class PlatformImplBase extends JdbcSupport implements Platform
     /** Whether to use the default ON DELETE action if the specified one is unsupported. */
     private boolean _useDefaultOnDeleteActionIfUnsupported = true;
 
+    private boolean needInitalize = true;
+
     /**
      * {@inheritDoc}
      */
@@ -3078,9 +3080,15 @@ public abstract class PlatformImplBase extends JdbcSupport implements Platform
 		    case Types.TIME:
 		        value = useIdx ? resultSet.getTime(columnIdx) : resultSet.getTime(columnName);
 		        break;
-		    case Types.TIMESTAMP:
-		        value = useIdx ? resultSet.getTimestamp(columnIdx) : resultSet.getTimestamp(columnName);
-		        break;
+            case Types.TIMESTAMP:
+                //mysql zero date value prohibited
+                // zeroDateTimeBehavior=convertToNull 但是还无法处理  0000-00-00 15:23:36
+                try {
+                    value = useIdx ? resultSet.getTimestamp(columnIdx) : resultSet.getTimestamp(columnName);
+                } catch (Exception e) {
+                    value = useIdx ? resultSet.getString(columnIdx) : resultSet.getString(columnName);
+                }
+                break;
 		    case Types.CLOB:
 		        Clob clob = useIdx ? resultSet.getClob(columnIdx) : resultSet.getClob(columnName);
 
@@ -3163,5 +3171,13 @@ public abstract class PlatformImplBase extends JdbcSupport implements Platform
     protected ModelBasedResultSetIterator createResultSetIterator(Database model, ResultSet resultSet, Table[] queryHints)
     {
         return new ModelBasedResultSetIterator(this, model, resultSet, queryHints, true);
+    }
+
+    public boolean isNeedInitalize() {
+        return needInitalize;
+    }
+
+    public void setNeedInitalize(boolean needInitalize) {
+        this.needInitalize = needInitalize;
     }
 }

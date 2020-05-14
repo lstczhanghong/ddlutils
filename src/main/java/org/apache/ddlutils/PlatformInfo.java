@@ -205,6 +205,7 @@ public class PlatformInfo
         _typesWithSize.add(new Integer(Types.VARCHAR));
         _typesWithSize.add(new Integer(Types.BINARY));
         _typesWithSize.add(new Integer(Types.VARBINARY));
+        _typesWithSize.add(new Integer(Types.NVARCHAR));
 
         _typesWithPrecisionAndScale.add(new Integer(Types.DECIMAL));
         _typesWithPrecisionAndScale.add(new Integer(Types.NUMERIC));

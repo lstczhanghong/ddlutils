@@ -513,7 +513,12 @@ public class JdbcModelReader
         {
             _connection = null;
         }
-        db.initialize();
+        /**
+         * 这里主要 验证表信息，项目不需要
+         */
+        if(getPlatform().isNeedInitalize()){
+            db.initialize();
+        }
         return db;
     }
 
@@ -592,8 +597,8 @@ public class JdbcModelReader
             table.setDescription((String)values.get("REMARKS"));
 
             table.addColumns(readColumns(metaData, tableName));
-            table.addForeignKeys(readForeignKeys(metaData, tableName));
-            table.addIndices(readIndices(metaData, tableName));
+//            table.addForeignKeys(readForeignKeys(metaData, tableName));
+//            table.addIndices(readIndices(metaData, tableName));
 
             Collection primaryKeys = readPrimaryKeyNames(metaData, tableName);
 
@@ -857,6 +862,7 @@ public class JdbcModelReader
         try
         {
 //            pkData = metaData.getPrimaryKeys(metaData.escapeForSearch(tableName));
+
             pkData = metaData.getPrimaryKeys(tableName);
             while (pkData.next())
             {

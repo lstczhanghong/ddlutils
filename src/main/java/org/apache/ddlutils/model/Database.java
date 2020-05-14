@@ -451,7 +451,9 @@ public class Database implements Serializable
 
                     if (column == null)
                     {
-                        throw new ModelException("The index "+indexDesc+" in table "+curTable.getName()+" references the undefined column "+indexColumn.getName());
+                        // oracle 不知什么原因要报错，先注释，项目也不需要
+                        // todo 找不到索引字段
+                        // throw new ModelException("The index "+indexDesc+" in table "+curTable.getName()+" references the undefined column "+indexColumn.getName());
                     }
                     else
                     {
@@ -707,5 +709,13 @@ public class Database implements Serializable
         }
 
         return result.toString();
+    }
+
+    public ArrayList getTableList() {
+        return _tables;
+    }
+
+    public void setTableList(ArrayList _tables) {
+        this._tables = _tables;
     }
 }

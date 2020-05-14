@@ -100,6 +100,7 @@ public class MySqlPlatform extends PlatformImplBase
         info.addNativeTypeMapping(Types.REAL,          "FLOAT");
         info.addNativeTypeMapping(Types.REF,           "MEDIUMBLOB", Types.LONGVARBINARY);
         info.addNativeTypeMapping(Types.STRUCT,        "LONGBLOB",   Types.LONGVARBINARY);
+        info.addNativeTypeMapping(Types.NVARCHAR,        "VARCHAR");
         // Since TIMESTAMP is not a stable datatype yet, and does not support a higher precision
         // than DATETIME (year to seconds) as of MySQL 5, we map the JDBC type here to DATETIME
         // TODO: Make this configurable

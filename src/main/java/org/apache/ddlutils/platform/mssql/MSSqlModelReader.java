@@ -99,7 +99,11 @@ public class MSSqlModelReader extends JdbcModelReader
             table = readComments(table);
 
             // Sql Server does not return the auto-increment status via the database metadata
-            determineAutoIncrementFromResultSetMetaData(table, table.getColumns());
+            // 对于sql server 视图不检测这个
+            //视图和表都不监测这个
+//            if(!"VIEW".equalsIgnoreCase(table.getType())){
+//                determineAutoIncrementFromResultSetMetaData(table, table.getColumns());
+//            }
 
             // TODO: Replace this manual filtering using named pks once they are available
             //       This is then probably of interest to every platform

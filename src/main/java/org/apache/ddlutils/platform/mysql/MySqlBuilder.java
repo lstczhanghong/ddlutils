@@ -24,12 +24,10 @@ import java.sql.Types;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.ddlutils.Platform;
 import org.apache.ddlutils.alteration.ColumnDefinitionChange;
-import org.apache.ddlutils.model.Column;
-import org.apache.ddlutils.model.ForeignKey;
-import org.apache.ddlutils.model.Table;
-import org.apache.ddlutils.model.TypeMap;
+import org.apache.ddlutils.model.*;
 import org.apache.ddlutils.platform.SqlBuilder;
 
 /**
@@ -296,6 +294,121 @@ public class MySqlBuilder extends SqlBuilder
         else
         {
             printIdentifier(getColumnName(sourceColumn));
+        }
+    }
+
+    /**
+     *  加入类型为BIT的，默认查出来是'true' 去掉单引号
+     * @param column The column
+     * @param value  The value
+     * @return
+     */
+    @Override
+    protected String getValueAsString(Column column, Object value) {
+        if (value == null)
+        {
+            return "NULL";
+        }
+
+        StringBuffer result = new StringBuffer();
+
+        // TODO: Handle binary types (BINARY, VARBINARY, LONGVARBINARY, BLOB)
+        switch (column.getTypeCode())
+        {
+            case Types.DATE:
+                result.append(getPlatformInfo().getValueQuoteToken());
+                if (!(value instanceof String) && (getValueDateFormat() != null))
+                {
+                    // TODO: Can the format method handle java.sql.Date properly ?
+                    result.append(getValueDateFormat().format(value));
+                }
+                else
+                {
+                    result.append(value.toString());
+                }
+                result.append(getPlatformInfo().getValueQuoteToken());
+                break;
+            case Types.TIME:
+                result.append(getPlatformInfo().getValueQuoteToken());
+                if (!(value instanceof String) && (getValueTimeFormat() != null))
+                {
+                    // TODO: Can the format method handle java.sql.Date properly ?
+                    result.append(getValueTimeFormat().format(value));
+                }
+                else
+                {
+                    result.append(value.toString());
+                }
+                result.append(getPlatformInfo().getValueQuoteToken());
+                break;
+            case Types.TIMESTAMP:
+                result.append(getPlatformInfo().getValueQuoteToken());
+                // TODO: SimpleDateFormat does not support nano seconds so we would
+                //       need a custom date formatter for timestamps
+                result.append(value.toString());
+                result.append(getPlatformInfo().getValueQuoteToken());
+                break;
+            case Types.REAL:
+            case Types.NUMERIC:
+            case Types.FLOAT:
+            case Types.DOUBLE:
+            case Types.DECIMAL:
+                result.append(getPlatformInfo().getValueQuoteToken());
+                if (!(value instanceof String) && (getValueNumberFormat() != null)) {
+                    result.append(getValueNumberFormat().format(value));
+                } else {
+                    result.append(value.toString());
+                }
+                result.append(getPlatformInfo().getValueQuoteToken());
+                break;
+            case Types.BIT:
+                result.append(escapeStringValue(value.toString()));
+                break;
+            default:
+                result.append(getPlatformInfo().getValueQuoteToken());
+                result.append(escapeStringValue(value.toString()));
+                result.append(getPlatformInfo().getValueQuoteToken());
+                break;
+        }
+        return result.toString();
+    }
+
+    /**
+     * 重写父类方法，加入字段注释
+     *
+     * @param table  The table containing the column
+     * @param column The column
+     * @throws IOException
+     */
+    protected void writeColumn(Table table, Column column) throws IOException {
+        super.writeColumn(table, column);
+        //加入字段注释
+        if (StringUtils.isNotBlank(column.getDescription())) {
+            print(" ");
+            print("COMMENT ");
+            print("'");
+            print(column.getDescription());
+            print("'");
+        }
+    }
+
+    /**
+     * 重写父类方法，加入表注释
+     * Writes the table creation statement without the statement end.
+     *
+     * @param database   The model
+     * @param table      The table
+     * @param parameters Additional platform-specific parameters for the table creation
+     */
+    protected void writeTableCreationStmt(Database database, Table table, Map parameters) throws IOException
+    {
+       super.writeTableCreationStmt(database,table,parameters);
+        if (StringUtils.isNotBlank(table.getDescription())) {
+            print(" ");
+            print("COMMENT = ");
+            print("'");
+            print(table.getDescription());
+            print("'");
         }
     }
 }

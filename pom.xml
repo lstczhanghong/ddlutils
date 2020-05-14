@@ -179,12 +179,17 @@
             <scope>runtime</scope>
             <optional>true</optional>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>sqlserver</artifactId>
             <version>4.0</version>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.47</version>
+        </dependency>-->
         <!--
             <dependency>
               <groupId>axion</groupId>

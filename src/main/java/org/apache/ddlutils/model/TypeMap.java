@@ -153,6 +153,13 @@ public abstract class TypeMap
         registerJdbcType(Types.NCLOB,      NCLOB,       JdbcTypeCategoryEnum.TEXTUAL);
         registerJdbcType(Types.ROWID,      ROWID,       JdbcTypeCategoryEnum.TEXTUAL);
         registerJdbcType(Types.SQLXML,     SQLXML,       JdbcTypeCategoryEnum.TEXTUAL);
+        //oracle
+        //TIMESTAMP WITH TIME ZONE  oracle.jdbc.OracleTypes.TIMESTAMPTZ java.sql.Timestamp  oracle.sql.TIMESTAMPTZ(-101)
+        _typeCodeToTypeName.put(-101, TIMESTAMP);
+        //sql server 的数据类型 sql_variant
+        _typeCodeToTypeName.put(-150, VARCHAR);
+         // oracle binary_double
+        _typeCodeToTypeName.put(101, INTEGER);
 
 
         // Torque/Turbine extensions which we only support when reading from an XML schema

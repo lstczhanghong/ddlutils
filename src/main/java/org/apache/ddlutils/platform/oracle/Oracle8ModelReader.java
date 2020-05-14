@@ -89,17 +89,17 @@ public class Oracle8ModelReader extends JdbcModelReader
         String tableName = (String)values.get("TABLE_NAME");
 
         // system table ?
-        if (tableName.indexOf('$') > 0)
+        if (tableName.indexOf('$') > 0 || tableName.indexOf('=') > 0)
         {
             return null;
         }
 
         Table table = super.readTable(metaData, values);
 
-        if (table != null)
-        {
-            determineAutoIncrementColumns(table);
-        }
+//        if (table != null)
+//        {
+//            determineAutoIncrementColumns(table);
+//        }
 
         return table;
     }
