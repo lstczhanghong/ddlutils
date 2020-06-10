@@ -27,6 +27,7 @@ import org.apache.ddlutils.platform.cloudscape.CloudscapePlatform;
 import org.apache.ddlutils.platform.db2.Db2Platform;
 import org.apache.ddlutils.platform.db2.Db2v8Platform;
 import org.apache.ddlutils.platform.derby.DerbyPlatform;
+import org.apache.ddlutils.platform.dm.DmPlatform;
 import org.apache.ddlutils.platform.firebird.FirebirdPlatform;
 import org.apache.ddlutils.platform.hsqldb.HsqlDbPlatform;
 import org.apache.ddlutils.platform.interbase.InterbasePlatform;
@@ -202,6 +203,7 @@ public class PlatformFactory
         addPlatform(_platforms, SapDbPlatform.DATABASENAME,       SapDbPlatform.class);
         addPlatform(_platforms, SybasePlatform.DATABASENAME,      SybasePlatform.class);
         addPlatform(_platforms, SybaseASE15Platform.DATABASENAME, SybaseASE15Platform.class);
+        addPlatform(_platforms, DmPlatform.DATABASENAME, DmPlatform.class);
     }
 
     /**

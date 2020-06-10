@@ -69,6 +69,30 @@ public class TestReadDb {
             }
         }
     }
+    @Test
+    public void testDm() {
+        BasicDataSource  dataSource=new BasicDataSource();
+        dataSource.setDriverClassName("dm.jdbc.driver.DmDriver");
+        dataSource.setUrl("jdbc:dm://116.63.167.207:5236/DMSERVER?zeroDateTimeBehavior=convertToNull&amp;useUnicode=true&amp;characterEncoding=utf-8");
+        dataSource.setUsername("TEST");
+        dataSource.setPassword("DM123456.");
+        final Platform sourcePlatform = PlatformFactory.createNewPlatformInstance(dataSource);
+        sourcePlatform.setDelimitedIdentifierModeOn(true);
+        final Database sourceDatabase = sourcePlatform.readModelFromDatabase("TEST", "TEST", "TEST", null);
+        {
+            //new DatabaseIO().write(sourceDatabase, "database.ddl");
+            final Table[] tables = sourceDatabase.getTables();
+            for (final Table table : tables) {
+                System.out.println(table.getName() + " : " + table.getDescription());
+
+                final Column[] columns = table.getColumns();
+                for (final Column column : columns) {
+                    System.out.print(column.getName() + "[" + column.getDescription() + "], ");
+                }
+                System.out.println();
+            }
+        }
+    }
 
 
 

@@ -32,6 +32,7 @@ import org.apache.ddlutils.platform.axion.AxionPlatform;
 import org.apache.ddlutils.platform.cloudscape.CloudscapePlatform;
 import org.apache.ddlutils.platform.db2.Db2Platform;
 import org.apache.ddlutils.platform.derby.DerbyPlatform;
+import org.apache.ddlutils.platform.dm.DmPlatform;
 import org.apache.ddlutils.platform.firebird.FirebirdPlatform;
 import org.apache.ddlutils.platform.hsqldb.HsqlDbPlatform;
 import org.apache.ddlutils.platform.interbase.InterbasePlatform;
@@ -213,6 +214,7 @@ public class PlatformUtils
         jdbcDriverToPlatform.put(SybasePlatform.JDBC_DRIVER_OLD,                  SybasePlatform.DATABASENAME);
         jdbcDriverToPlatform.put(PlatformUtils.JDBC_DRIVER_DATADIRECT_SYBASE,     SybasePlatform.DATABASENAME);
         jdbcDriverToPlatform.put(PlatformUtils.JDBC_DRIVER_INET_SYBASE,           SybasePlatform.DATABASENAME);
+        jdbcDriverToPlatform.put(DmPlatform.JDBC_DRIVER,                          DmPlatform.DATABASENAME);
     }
 
     /**
