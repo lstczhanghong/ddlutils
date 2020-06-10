@@ -1,7 +1,11 @@
 package org.apache.ddlutils.platform.dm;
 
 import org.apache.ddlutils.platform.PlatformImplBase;
-
+/**
+ * The platform implementation for dm db.
+ *
+ * @version $Revision: 231306 $
+ */
 public class DmPlatform extends PlatformImplBase {
     /**
      * Database name of this platform.
